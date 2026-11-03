@@ -12,6 +12,7 @@ obj/
 *.userosscache
 *.suo
 *.userprefs
+Store/Context/StoreDB.cs
 
 ## --- Operating System Files ---
 .DS_Store
