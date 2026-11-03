@@ -1,0 +1,18 @@
+## --- IDE Settings (JetBrains Rider / VS Code) ---
+.idea/
+*.sln.DotSettings.user
+.vscode/
+
+## --- .NET Build Output ---
+bin/
+obj/
+
+## --- User Specific & Environment ---
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+## --- Operating System Files ---
+.DS_Store
+Thumbs.db

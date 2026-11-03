@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+             x:Class="Store.RegisterControl">
+    <StackPanel Spacing="20" HorizontalAlignment="Center" VerticalAlignment="Center" Width="400">
+        <TextBlock Text="Registration" FontWeight="Bold" FontSize="30"/>
+        
+        <StackPanel>
+            <TextBlock Text="Имя"/>
+            <TextBox PlaceholderText="Иван" x:Name="LastNameInput"/>
+        </StackPanel>
+        
+        <StackPanel>
+            <TextBlock Text="Фамилия"/>
+            <TextBox PlaceholderText="Иванов" x:Name="FirstNameInput"/>
+        </StackPanel>
+        
+        <StackPanel>
+            <TextBlock Text="Email"/>
+            <TextBox PlaceholderText="example@gmail.com" x:Name="EmailInput"/>
+        </StackPanel>
+        
+        <StackPanel>
+            <TextBlock Text="Пароль"/>
+            <TextBox PlaceholderText="******" PasswordChar="*" x:Name="PasswordInput"/>
+        </StackPanel>
+        
+        <StackPanel>
+            <TextBlock Text="Номер телефона"/>
+            <DockPanel HorizontalSpacing="5">
+                <ComboBox x:Name="CountryCodeBox"
+                          SelectedIndex="0">
+                    <ComboBoxItem>+7</ComboBoxItem>
+                </ComboBox>
+                <TextBox PlaceholderText="9991234567" MaxLength="10" x:Name="PhoneInput"/>
+            </DockPanel>
+        </StackPanel>
+        
+        <Button Content="Регистрация"
+                Click="Registration_OnClick"/>
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="5">
+            <TextBlock Text="Есть аккаунт?" 
+                       VerticalAlignment="Center"/>
+            
+            <HyperlinkButton Content="Войти" 
+                             VerticalAlignment="Center"
+                             Click="ViewLogin_OnClick"/>
+        </StackPanel>
+        
+    </StackPanel>
+</UserControl>

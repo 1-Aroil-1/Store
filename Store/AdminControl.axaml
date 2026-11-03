@@ -1,0 +1,447 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:m3C="using:Material3.Avalonia.Controls"
+             xmlns:icons="using:Material3.Avalonia.Icons"
+             xmlns:ent="clr-namespace:Store.Entities"
+             xmlns:local="clr-namespace:Store"
+             x:Class="Store.AdminControl">
+    <Grid ColumnDefinitions="150,*">
+
+        <m3C:Card Grid.Column="0" Variant="Outlined" Margin="10" Padding="10">
+            <ListBox SelectedIndex="0"
+                      x:Name="MainMenu"
+                      SelectionChanged="OnSelectionChanged">
+            
+                <m3C:NavigationRailItem Label="Товары">
+                    <m3C:NavigationRailItem.Icon>
+                        <PathIcon Data="{x:Static icons:MaterialSymbols.Orders}" />
+                    </m3C:NavigationRailItem.Icon>
+                </m3C:NavigationRailItem>
+            
+                <m3C:NavigationRailItem Label="Пользователи">
+                    <m3C:NavigationRailItem.Icon>
+                        <PathIcon Data="{x:Static icons:MaterialSymbols.Group}" />
+                    </m3C:NavigationRailItem.Icon>
+                </m3C:NavigationRailItem>
+                
+                <m3C:NavigationRailItem Label="Заказы">
+                    <m3C:NavigationRailItem.Icon>
+                        <PathIcon Data="{x:Static icons:MaterialSymbols.Inventory}"/>
+                    </m3C:NavigationRailItem.Icon>
+                </m3C:NavigationRailItem>
+            
+                <m3C:NavigationRailItem Label="Касса">
+                    <m3C:NavigationRailItem.Icon>
+                        <PathIcon Data="{x:Static icons:MaterialSymbols.AddCard}" />
+                    </m3C:NavigationRailItem.Icon>
+                </m3C:NavigationRailItem>
+                
+                <m3C:NavigationRailItem Label="Аккаунт">
+                    <m3C:NavigationRailItem.Icon>
+                        <PathIcon Data="{x:Static icons:MaterialSymbols.AccountCircle}" />
+                    </m3C:NavigationRailItem.Icon>
+                </m3C:NavigationRailItem>
+            </ListBox>
+        </m3C:Card>
+        
+        <Carousel Grid.Column="1" x:Name="ContentCarousel" SelectedIndex="0">
+            
+            <m3C:Card Variant="Outlined" Margin="10" Padding="10" ClipToBounds="True">
+                <Grid RowDefinitions="Auto,Auto,*">
+
+                    <m3C:Card Grid.Row="0" Variant="Filled" Margin="10" Padding="10" ClipToBounds="True">
+                        <TabControl>
+                            
+                            <TabItem Header="Поиск">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Orientation="Vertical" Spacing="10" Margin="0,10,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="Название товара"/>
+                                            <TextBox x:Name="SearchProductNameTextBox" PlaceholderText="Samsung S25" TextChanged="OnProductSearchTextChanged"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock Text="Категория товара"/> 
+                                            <TextBox x:Name="SearchProductCategoryTextBox" PlaceholderText="Смартфоны" TextChanged="OnProductSearchTextChanged"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock Text="Диапазон цен"/>
+                                            <m3C:RangeSlider x:Name="SearchProductPriceRangeSlider" 
+                                                             Margin="20,0" 
+                                                             TickFrequency="1" 
+                                                             IsSnapToTickEnabled="True" 
+                                                             ValueFormat="0"
+                                                             LowerValueChanged="OnProductSearchSliderChanged"
+                                                             UpperValueChanged="OnProductSearchSliderChanged"/>
+                                        </StackPanel>
+                                        <Separator Margin="10,0"/>
+                                        <StackPanel>
+                                            <TextBlock Text="Сортировать"/>
+                                            <ComboBox SelectedIndex="0" x:Name="SearchProductSortComboBox" HorizontalAlignment="Stretch" SelectionChanged="OnProductSortChanged">
+                                                <ComboBoxItem Content="По убыванию цены"/>
+                                                <ComboBoxItem Content="По возрастанию цены"/>
+                                                <ComboBoxItem Content="По убыванию кол-ва на складе"/>
+                                                <ComboBoxItem Content="По возрастанию кол-ва на складе"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <Button Content="Сбросить" HorizontalAlignment="Right" Click="OnResetProductSearchClick"/>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            
+                            <TabItem Header="Редактирование">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Spacing="20">
+                                        <StackPanel Orientation="Vertical" Spacing="10" Margin="0,10,0,0"
+                                                    DataContext="{Binding #ProductsTableView.SelectedItem}"
+                                                    x:DataType="ent:Product">
+                                            <StackPanel>
+                                                <TextBlock Text="Название товара"/>
+                                                <TextBox x:Name="ProductNameTextBox" PlaceholderText="Samsung S25" Text="{Binding Name}"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="Категория товара"/>
+                                                <TextBox x:Name="ProductCategoryTextBox" PlaceholderText="Смартфоны" Text="{Binding Category}"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="Цена(за шт)"/>
+                                                <TextBox x:Name="ProductPriceTextBox" PlaceholderText="1200000" Text="{Binding Price}"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="Кол-во на складе"/>
+                                                <TextBox x:Name="ProductStockQuantityTextBox" PlaceholderText="67" Text="{Binding StockQuantity}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel HorizontalAlignment="Right">
+                                            <m3C:ButtonGroup>
+                                                <Button Content="Сохранить изменения"
+                                                        Click="OnUpdateProductClick"
+                                                        IsEnabled="{Binding !!#ProductsTableView.SelectedItem}"/>
+                                                <Button Content="Создать"
+                                                        Click="OnCreateProductClick"/>
+                                                <Button Content="Удалить"
+                                                        Click="OnDeleteProductClick"
+                                                        IsEnabled="{Binding !!#ProductsTableView.SelectedItem}"/>
+                                            </m3C:ButtonGroup>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+                            
+                            <TabItem Header="Отчёт">
+                                <TextBlock Text="Здесь будет отчёт" Margin="20"/>
+                            </TabItem>
+
+                        </TabControl>
+                    </m3C:Card>    
+                    
+                    <GridSplitter Grid.Row="1" ResizeDirection="Rows"/>
+                    
+                    <TableView Grid.Row="2" 
+                               x:Name="ProductsTableView" 
+                               x:DataType="ent:Product"
+                               Margin="10">
+                        <TableView.Columns>
+                            <TableViewColumn Header="id" Binding="{Binding Id}" Width="50"/>
+                            <TableViewColumn Header="Название" Binding="{Binding Name}"/>
+                            <TableViewColumn Header="Категория" Binding="{Binding Category}"/>
+                            <TableViewColumn Header="Цена(за шт)" Binding="{Binding Price}"/>
+                            <TableViewColumn Header="Кол-во на складе" Binding="{Binding StockQuantity}"/>
+                        </TableView.Columns>
+                    </TableView>
+                </Grid>
+            </m3C:Card>
+            
+            <m3C:Card Variant="Outlined" Margin="10" Padding="10" ClipToBounds="True">
+                <Grid RowDefinitions="Auto,Auto,*">
+
+                    <m3C:Card Grid.Row="0" Variant="Filled" Margin="10" Padding="10" ClipToBounds="True">
+                        <TabControl>
+                            
+                            <TabItem Header="Поиск">
+                                
+                            </TabItem>
+                            
+                            <TabItem Header="Редактирование">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <StackPanel Orientation="Vertical" Spacing="10" Margin="0,10,0,0">
+                                        
+                                        <StackPanel Spacing="10" DataContext="{Binding #ClientsTableView.SelectedItem}" x:DataType="ent:Client">
+                                            <StackPanel>
+                                                <TextBlock Text="Полное имя"/>
+                                                <TextBox x:Name="ClientFullNameTextBox" PlaceholderText="Иванов Иван" Text="{Binding FullName}"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="Email"/>
+                                                <TextBox x:Name="ClientEmailTextBox" PlaceholderText="example@mail.com" Text="{Binding Email}"/>    
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="Пароль (Пусто = Не изменяется)"/>
+                                                <TextBox x:Name="ClientPasswordTextBox" PlaceholderText="********" PasswordChar="*"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="Номер телефона"/>
+                                                <TextBox x:Name="ClientPhoneTextBox" PlaceholderText="+79991239090" Text="{Binding PhoneNumber}"/>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <TextBlock Text="Роль пользователя"/>
+                                                <ComboBox SelectedIndex="1" x:Name="ClientRoleComboBox" HorizontalAlignment="Stretch">
+                                                    <ComboBoxItem Content="Администратор"/>
+                                                    <ComboBoxItem Content="Пользователь"/>
+                                                </ComboBox>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                                            <m3C:ButtonGroup>
+                                                <Button Content="Сохранить изменения"
+                                                        Click="OnUpdateClientClick"
+                                                        IsEnabled="{Binding !!#ClientsTableView.SelectedItem}"/>
+                                                <Button Content="Создать"
+                                                        Click="OnCreateClientClick"/>
+                                                <Button Content="Удалить"
+                                                        Click="OnDeleteClientClick"
+                                                        IsEnabled="{Binding !!#ClientsTableView.SelectedItem}"/>
+                                            </m3C:ButtonGroup>
+                                        </StackPanel>
+                                        
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </TabItem>
+
+                            
+                            <TabItem Header="История заказов">
+                                <TableView x:Name="ClientOrdersHistoryTableView" 
+                                           x:DataType="ent:Order" 
+                                           Margin="10">
+                                    <TableView.Columns>
+                                        <TableViewColumn Header="id" Binding="{Binding Id}" Width="50"/>
+                                        <TableViewColumn Header="Дата оформления" Binding="{Binding OrderDate}"/>
+                                        <TableViewColumn Header="Сумма заказа" Binding="{Binding TotalAmount, StringFormat='{}{0} руб.'}"/>
+                                    </TableView.Columns>
+                                </TableView>
+                            </TabItem>
+
+                        </TabControl>
+                    </m3C:Card>    
+                    
+                    <GridSplitter Grid.Row="1" ResizeDirection="Rows"/>
+                    
+                    <TableView Grid.Row="2" 
+                               x:Name="ClientsTableView" 
+                               x:DataType="ent:Client"
+                               SelectionChanged="ClientsTableView_OnSelectionChanged"
+                               Margin="10">
+                        <TableView.Columns>
+                            <TableViewColumn Header="id" Binding="{Binding Id}" Width="50"/>
+                            <TableViewColumn Header="Полное имя" Binding="{Binding FullName}"/>
+                            <TableViewColumn Header="Email" Binding="{Binding Email}"/>
+                            <TableViewColumn Header="Телефон" Binding="{Binding PhoneNumber}"/>
+                            <TableViewColumn Header="Роль" Binding="{Binding RoleName}"/>
+                        </TableView.Columns>
+                    </TableView>
+                </Grid>
+            </m3C:Card>
+            
+            <m3C:Card Variant="Outlined" Margin="10" Padding="10" ClipToBounds="True">
+                <Grid RowDefinitions="Auto,Auto,*">
+
+                    <m3C:Card Grid.Row="0" Variant="Filled" Margin="10" Padding="10" ClipToBounds="True">
+                        <TabControl>
+                            
+                            <TabItem Header="Поиск">
+                                <StackPanel Orientation="Horizontal" Spacing="15" Margin="10">
+                                    <TextBox x:Name="SearchClientTextBox" PlaceholderText="Поиск по ФИ клиента" Width="250" TextChanged="OnSearchTextChangedOrders"/>
+                                    <DatePicker x:Name="SearchDatePicker" SelectedDateChanged="OnSearchDateChangedOrders"/>
+                                    <Button Content="Сбросить" Click="OnResetSearchClickOrders"/>
+                                </StackPanel>
+                            </TabItem>
+                            
+                            <TabItem Header="Редактирование">
+                                <StackPanel Margin="0,10,0,0"
+                                            DataContext="{Binding #OrdersTableView.SelectedItem}"
+                                            x:DataType="ent:Order">
+                                    <TextBlock Text="Здесь будет редактирование" Margin="20"/>
+                                </StackPanel>
+                            </TabItem>
+                            
+                            <TabItem Header="Детали заказа">
+                                <TableView x:Name="OrderDetailsTableView" 
+                                           x:DataType="ent:OrderDetail" 
+                                           Height="150" Margin="10">
+                                    <TableView.Columns>
+                                        <TableViewColumn Header="Товар" Binding="{Binding Product.Name}"/>
+                                        <TableViewColumn Header="Кол-во" Binding="{Binding Quantity}"/>
+                                        <TableViewColumn Header="Цена за шт." Binding="{Binding PricePerUnit}"/>
+                                    </TableView.Columns>
+                                </TableView>
+                            </TabItem>
+                            
+                            <TabItem Header="Отчёт">
+                                <TextBlock Text="Здесь будет отчёт" Margin="20"/>
+                            </TabItem>
+
+                        </TabControl>
+                    </m3C:Card>    
+                    
+                    <GridSplitter Grid.Row="1" ResizeDirection="Rows"/>
+                    
+                    <TableView Grid.Row="2" 
+                               x:Name="OrdersTableView" 
+                               x:DataType="ent:Order"
+                               SelectionChanged="OnOrderSelected"
+                               Margin="10">
+                        <TableView.Columns>
+                            <TableViewColumn Header="id" Binding="{Binding Id}" Width="50"/>
+                            <TableViewColumn Header="Полное имя клиента" Binding="{Binding Client.FullName}"/>
+                            <TableViewColumn Header="Дата заказа" Binding="{Binding OrderDate}"/>
+                            <TableViewColumn Header="Сумма заказа" Binding="{Binding TotalAmount}"/>
+                        </TableView.Columns>
+                    </TableView>
+                </Grid>
+            </m3C:Card>
+            
+            <m3C:Card Variant="Outlined" Margin="10" Padding="10" ClipToBounds="True">
+                <Grid RowDefinitions="*,Auto,Auto">
+                    <m3C:Card Grid.Row="0" Variant="Filled" Margin="10" Padding="10" ClipToBounds="True">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="Текущий состав заказа" FontSize="16" FontWeight="SemiBold"/>
+                                            
+                                <ListBox x:Name="CartListBox" Background="Transparent" BorderThickness="0">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid ColumnDefinitions="*, Auto, Auto, Auto" Margin="0,4" x:DataType="local:CartItem">
+                                                <TextBlock Grid.Column="0" Text="{Binding Product.Name}" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Quantity, StringFormat='{}x {0} шт.'}" Margin="15,0" Foreground="Gray" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Total, StringFormat='{}{0} руб.'}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                <Button Grid.Column="3" Click="OnRemoveFromCartClick" Content="Удалить" VerticalAlignment="Center" Margin="10,0"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                
+                                <Separator/>
+                                
+                                <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                                    <TextBlock Text="ИТОГО К ОПЛАТЕ:" FontWeight="Bold" FontSize="16"/>
+                                    <TextBlock x:Name="TotalOrderAmountTextBlock" Text="0 руб." FontWeight="Bold" FontSize="16" Foreground="{DynamicResource m3cPrimaryBrush}"/>
+                                </StackPanel>
+                                
+                                <Button Content="Зарегистрировать заказ" Click="OnCheckoutClick"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </m3C:Card>
+                    
+                    <GridSplitter Grid.Row="1"/>
+                    
+                    <m3C:Card Grid.Row="2" Variant="Outlined" Margin="10" Padding="10" ClipToBounds="True">
+                        <StackPanel Spacing="15" Margin="0,0,15,0" ClipToBounds="True">
+                            <TextBlock Text="Оформление нового чека" FontSize="16" FontWeight="SemiBold"/>
+                            
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Клиент:" FontSize="12"/>
+                                <ComboBox x:Name="OrderClientComboBox" HorizontalAlignment="Stretch" PlaceholderText="Выберите покупателя">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock x:DataType="ent:Client" Text="{Binding FullName}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                            
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Добавление товара в чек" FontSize="12"/>
+                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                                    <ComboBox Grid.Column="0" x:Name="OrderProductComboBox" HorizontalAlignment="Stretch" PlaceholderText="Выберите товар">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Spacing="10" x:DataType="ent:Product">
+                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding Price, StringFormat='({0} руб.)'}" Foreground="Gray" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding StockQuantity, StringFormat='Остаток: {0} шт.'}" Foreground="Crimson" FontSize="11" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    
+                                    <NumericUpDown Grid.Column="1" x:Name="OrderQuantitySpinner" Minimum="1" Value="1" Increment="1"/>
+                                </Grid>
+                            </StackPanel>
+                            
+                            <Button Content="Добавить в заказ" HorizontalAlignment="Stretch" Click="OnAddToBagClick"/>
+                        </StackPanel>
+                    </m3C:Card>
+                    
+                </Grid>
+            </m3C:Card>
+            
+            <m3C:Card Variant="Outlined" Margin="10" Padding="15" ClipToBounds="True">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="15">
+                        
+                        <TextBlock Text="Профиль пользователя" 
+                                   FontSize="20" 
+                                   FontWeight="SemiBold"/>
+                        
+                        <Separator Margin="0,10"/>
+                        
+                        <m3C:SettingItem Headline="Личные данные"
+                                         SupportingText="Ваше полное имя в системе">
+                            <m3C:SettingItem.Trailing>
+                                <TextBox x:Name="AccountFullName"
+                                         Width="250" 
+                                         IsReadOnly="True"/>
+                            </m3C:SettingItem.Trailing>
+                        </m3C:SettingItem>
+                        
+                        <m3C:SettingItem Headline="Электронная почта"
+                                         SupportingText="Используется для входа и уведомлений">
+                            <m3C:SettingItem.Trailing>
+                                <TextBox x:Name="AccountEmail" 
+                                         Width="250" 
+                                         IsReadOnly="True" />
+                            </m3C:SettingItem.Trailing>
+                        </m3C:SettingItem>
+                        
+                        <m3C:SettingItem Headline="Номер телефона"
+                                         SupportingText="Для связи и подтверждения заказов">
+                            <m3C:SettingItem.Trailing>
+                                <TextBox x:Name="AccountPhone" 
+                                         Width="250" 
+                                         IsReadOnly="True" />
+                            </m3C:SettingItem.Trailing>
+                        </m3C:SettingItem>
+
+                        <Separator Margin="20,10"/>
+                        
+                        <m3C:SettingItem Headline="Пароль"
+                                         SupportingText="Изменить текущий пароль учетной записи">
+                            <m3C:SettingItem.Trailing>
+                                <Button Content="Изменить"
+                                        Click="ChangePassword_OnClick"/>
+                            </m3C:SettingItem.Trailing>
+                        </m3C:SettingItem>
+                        
+                        <m3C:SettingItem Headline="Выход из аккаунта"
+                                         SupportingText="Завершить текущую сессию">
+                            <m3C:SettingItem.Trailing>
+                                <Button Content="Выйти"
+                                        Click="Exit_OnClick"/>
+                            </m3C:SettingItem.Trailing>
+                        </m3C:SettingItem>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </m3C:Card>
+        </Carousel>
+    </Grid>
+</UserControl>

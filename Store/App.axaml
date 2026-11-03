@@ -1,0 +1,14 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Store.App"
+             xmlns:m3="using:Material3.Avalonia">
+
+    <Application.Styles>
+        <Style Selector="NotificationCard">
+            <Setter Property="MinWidth" Value="450"/>
+            <Setter Property="MaxWidth" Value="600"/>
+        </Style>
+        
+        <m3:MaterialTheme SeedColor="#6750A4" />
+    </Application.Styles>
+</Application>
