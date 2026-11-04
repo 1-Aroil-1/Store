@@ -278,7 +278,7 @@
                             <TabItem Header="Детали заказа">
                                 <TableView x:Name="OrderDetailsTableView" 
                                            x:DataType="ent:OrderDetail" 
-                                           Height="150" Margin="10">
+                                           Margin="10">
                                     <TableView.Columns>
                                         <TableViewColumn Header="Товар" Binding="{Binding Product.Name}"/>
                                         <TableViewColumn Header="Кол-во" Binding="{Binding Quantity}"/>

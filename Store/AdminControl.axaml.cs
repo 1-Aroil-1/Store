@@ -1017,6 +1017,11 @@ public partial class AdminControl : UserControl
         }
     }
     
+    /*
+     * ==================================================================
+     *                          Создание отчёта
+     * ==================================================================
+     */
     private async void OnGenerateReportClick(object? sender, RoutedEventArgs e)
     {
         try
