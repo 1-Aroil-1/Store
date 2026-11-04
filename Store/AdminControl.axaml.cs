@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using ClosedXML.Excel;
 using Material3.Avalonia.Controls;
 using Microsoft.EntityFrameworkCore;
 using Store.Context;
@@ -26,6 +28,14 @@ public class CartItem
     public decimal PricePerUnit => Product.Price;
     public decimal Total => Quantity * PricePerUnit;
 }
+
+public class TopClientReportItem
+{
+    public string FullName { get; init; } = null!;
+    public int OrdersCount { get; init; }
+    public decimal TotalSpent { get; init; }
+}
+
 public partial class AdminControl : UserControl
 {
     private ObservableCollection<CartItem> Cart { get; } = [];
@@ -191,6 +201,7 @@ public partial class AdminControl : UserControl
             
             var dialogOverlay = new Grid
             {
+                Background = new SolidColorBrush(Color.FromArgb(128, 0, 0, 0)),
                 Width = topLevel.Bounds.Width,
                 Height = topLevel.Bounds.Height,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -1019,6 +1030,100 @@ public partial class AdminControl : UserControl
             Cart.Remove(itemToRemove);
             TotalOrderAmountTextBlock.Text = $"{Cart.Sum(item => item.Total)} руб.";
             NotificationService.Notify("Корзина", $"Товар '{itemToRemove.Product.Name}' удален из чека.", NotificationType.Warning);
+        }
+    }
+    
+    private async void OnGenerateReportClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            DateTime? startDate = ReportStartDatePicker.SelectedDate?.DateTime.Date;
+            DateTime? endDate = ReportEndDatePicker.SelectedDate?.DateTime.Date;
+
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                NotificationService.Notify("Внимание", "Укажите начальную и конечную даты для отчета!", NotificationType.Warning);
+                return;
+            }
+
+            if (startDate > endDate)
+            {
+                NotificationService.Notify("Ошибка", "Дата 'С' не может быть больше даты 'По'!", NotificationType.Error);
+                return;
+            }
+        
+            DateTime endDateTime = endDate.Value.AddDays(1);
+            
+            var reportData = await Task.Run(async () =>
+            {
+                await using var db = new StoreDB();
+
+                return await db.Orders
+                    .Include(o => o.Client)
+                    .Where(o => o.OrderDate >= startDate.Value && o.OrderDate < endDateTime)
+                    .GroupBy(o => o.ClientId)
+                    .Select(group => new TopClientReportItem
+                    {
+                        FullName = group.First().Client.FullName,
+                        OrdersCount = group.Count(),
+                        TotalSpent = group.Sum(o => o.TotalAmount)
+                    })
+                    .OrderByDescending(item => item.TotalSpent)
+                    .Take(5)
+                    .ToListAsync().ConfigureAwait(false);
+            });
+            
+            if (reportData.Count == 0)
+            {
+                NotificationService.Notify("Информация", "За выбранный период заказов не найдено.", NotificationType.Warning);
+                return;
+            }
+            
+            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), 
+                $"Отчет_Топ_Клиентов_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+            
+            await Task.Run(() =>
+            {
+                using var workbook = new XLWorkbook();
+                var worksheet = workbook.Worksheets.Add("Топ Клиентов");
+                
+                worksheet.Cell("A1").Value = "Отчет по клиентам с наибольшими заказами";
+                worksheet.Cell("A2").Value = $"Период: с {startDate.Value:dd.MM.yyyy} по {endDate.Value:dd.MM.yyyy}";
+                worksheet.Range("A1:C1").Row(1).Merge().Style.Font.SetBold().Font.SetFontSize(14);
+                worksheet.Range("A2:C2").Row(1).Merge().Style.Font.SetItalic().Font.SetFontSize(11);
+                
+                worksheet.Cell("A4").Value = "ФИО Клиента";
+                worksheet.Cell("B4").Value = "Кол-во заказов";
+                worksheet.Cell("C4").Value = "Общая сумма покупок (руб.)";
+
+                var headerRange = worksheet.Range("A4:C4");
+                headerRange.Style.Font.SetBold();
+                headerRange.Style.Fill.SetBackgroundColor(XLColor.LightGray);
+                
+                int currentRow = 5;
+                foreach (var item in reportData)
+                {
+                    worksheet.Cell(currentRow, 1).Value = item.FullName;
+                    worksheet.Cell(currentRow, 2).Value = item.OrdersCount;
+                    worksheet.Cell(currentRow, 3).Value = item.TotalSpent;
+
+                    worksheet.Cell(currentRow, 3).Style.NumberFormat.Format = "#,##0.00";
+                    currentRow++;
+                }
+                
+                worksheet.Range(4, 1, currentRow - 1, 3).Style.Border.SetInsideBorder(XLBorderStyleValues.Thin);
+                worksheet.Range(4, 1, currentRow - 1, 3).Style.Border.SetOutsideBorder(XLBorderStyleValues.Thin);
+                
+                worksheet.Columns().AdjustToContents();
+                
+                workbook.SaveAs(filePath);
+            });
+
+            NotificationService.Notify("Успех!", $"Отчёт сохранен на Рабочий стол:\n{Path.GetFileName(filePath)}", NotificationType.Success);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify("Ошибка отчёта", ex.Message, NotificationType.Error);
         }
     }
 }

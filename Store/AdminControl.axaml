@@ -87,7 +87,7 @@
                                                 <ComboBoxItem Content="По возрастанию кол-ва на складе"/>
                                             </ComboBox>
                                         </StackPanel>
-                                        <Button Content="Сбросить" HorizontalAlignment="Right" Click="OnResetProductSearchClick"/>
+                                        <Button Content="Сбросить" Click="OnResetProductSearchClick"/>
                                     </StackPanel>
                                 </ScrollViewer>
                             </TabItem>
@@ -132,10 +132,6 @@
                                     </StackPanel>
                                 </ScrollViewer>
                             </TabItem>
-                            
-                            <TabItem Header="Отчёт">
-                                <TextBlock Text="Здесь будет отчёт" Margin="20"/>
-                            </TabItem>
 
                         </TabControl>
                     </m3C:Card>    
@@ -162,10 +158,6 @@
 
                     <m3C:Card Grid.Row="0" Variant="Filled" Margin="10" Padding="10" ClipToBounds="True">
                         <TabControl>
-                            
-                            <TabItem Header="Поиск">
-                                
-                            </TabItem>
                             
                             <TabItem Header="Редактирование">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" 
@@ -227,6 +219,20 @@
                                     </TableView.Columns>
                                 </TableView>
                             </TabItem>
+                            
+                            <TabItem Header="Отчёт">
+                                <StackPanel Spacing="10">
+                                    <StackPanel>
+                                        <TextBlock Text="Дата 'С'"/>
+                                        <DatePicker x:Name="ReportStartDatePicker"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Дата 'По'"/>
+                                        <DatePicker x:Name="ReportEndDatePicker"/>
+                                    </StackPanel>
+                                    <Button Click="OnGenerateReportClick" Content="Создать отчёт"/>
+                                </StackPanel>
+                            </TabItem>
 
                         </TabControl>
                     </m3C:Card>    
@@ -256,18 +262,16 @@
                         <TabControl>
                             
                             <TabItem Header="Поиск">
-                                <StackPanel Orientation="Horizontal" Spacing="15" Margin="10">
-                                    <TextBox x:Name="SearchClientTextBox" PlaceholderText="Поиск по ФИ клиента" Width="250" TextChanged="OnSearchTextChangedOrders"/>
-                                    <DatePicker x:Name="SearchDatePicker" SelectedDateChanged="OnSearchDateChangedOrders"/>
+                                <StackPanel Spacing="10" Margin="10">
+                                    <StackPanel>
+                                        <TextBlock Text="Полное имя"/>
+                                        <TextBox x:Name="SearchClientTextBox" PlaceholderText="Иванов Иван" TextChanged="OnSearchTextChangedOrders"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Дата"/>
+                                        <DatePicker x:Name="SearchDatePicker" SelectedDateChanged="OnSearchDateChangedOrders"/>    
+                                    </StackPanel>
                                     <Button Content="Сбросить" Click="OnResetSearchClickOrders"/>
-                                </StackPanel>
-                            </TabItem>
-                            
-                            <TabItem Header="Редактирование">
-                                <StackPanel Margin="0,10,0,0"
-                                            DataContext="{Binding #OrdersTableView.SelectedItem}"
-                                            x:DataType="ent:Order">
-                                    <TextBlock Text="Здесь будет редактирование" Margin="20"/>
                                 </StackPanel>
                             </TabItem>
                             
@@ -281,10 +285,6 @@
                                         <TableViewColumn Header="Цена за шт." Binding="{Binding PricePerUnit}"/>
                                     </TableView.Columns>
                                 </TableView>
-                            </TabItem>
-                            
-                            <TabItem Header="Отчёт">
-                                <TextBlock Text="Здесь будет отчёт" Margin="20"/>
                             </TabItem>
 
                         </TabControl>
